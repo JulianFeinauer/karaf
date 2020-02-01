@@ -16,6 +16,21 @@
  */
 package org.apache.karaf.bundle.core.internal;
 
+import org.apache.karaf.bundle.core.BundleService;
+import org.apache.karaf.bundle.core.BundleWatcher;
+import org.apache.karaf.util.bundles.BundleUtils;
+import org.apache.karaf.util.maven.Parser;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.wiring.FrameworkWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,15 +46,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.karaf.bundle.core.BundleService;
-import org.apache.karaf.bundle.core.BundleWatcher;
-import org.apache.karaf.util.bundles.BundleUtils;
-import org.apache.karaf.util.maven.Parser;
-import org.osgi.framework.*;
-import org.osgi.framework.wiring.FrameworkWiring;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A Runnable singleton which watches at the defined location for bundle
  * updates.
@@ -49,8 +55,8 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
     private final Logger logger = LoggerFactory.getLogger(BundleWatcherImpl.class);
 
     private BundleContext bundleContext;
-	private final BundleService bundleService;
-	private final MavenConfigService localRepoDetector;
+    private final BundleService bundleService;
+    private final MavenConfigService localRepoDetector;
 
     private AtomicBoolean running = new AtomicBoolean(false);
     private long interval = 1000L;
@@ -59,7 +65,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
 
     public BundleWatcherImpl(BundleContext bundleContext, MavenConfigService mavenConfigService, BundleService bundleService) {
         this.bundleContext = bundleContext;
-		this.localRepoDetector = mavenConfigService;
+        this.localRepoDetector = mavenConfigService;
         this.bundleService = bundleService;
     }
 
@@ -201,9 +207,9 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
 
     /**
      * Return the location of the Bundle inside the local maven repository.
-     * 
+     *
      * @param localRepository the repository where to look for bundle update.
-     * @param bundle the bundle to check update.
+     * @param bundle          the bundle to check update.
      * @return the updated file.
      */
     private File getBundleExternalLocation(File localRepository, Bundle bundle) {
@@ -263,10 +269,10 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
         return running.get();
     }
 
-	@Override
-	public List<Bundle> getBundlesByURL(String urlFilter) {
+    @Override
+    public List<Bundle> getBundlesByURL(String urlFilter) {
         urlFilter = urlFilter.replaceAll("\\*", ".*");
-		return bundleService.selectBundles(Collections.singletonList(urlFilter), false);
-	}
+        return bundleService.selectBundles(Collections.singletonList(urlFilter), false);
+    }
 
 }
